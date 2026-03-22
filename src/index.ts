@@ -1,7 +1,22 @@
 import { ingestInput } from '../../alive-body/src/sensors/ingestion';
 import { routeSignal } from '../../alive-runtime/src/router/signal-router';
+import { getLog } from '../../alive-body/src/logging/execution-log';
+declare function require(name: string): any;
+declare const process: any;
 
-const signal = ingestInput('hello');
-const result = routeSignal(signal);
+const readline = require('readline');
 
-console.log('ALIVE result:', result);
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+rl.question('Input: ', (input: string) => {
+  const signal = ingestInput(input);
+  const result = routeSignal(signal);
+
+  console.log('ALIVE result:', result);
+  console.log('Execution log:', getLog());
+
+  rl.close();
+});

@@ -1,6 +1,26 @@
 # ALIVE Interface
 
-> **Constitution defines → Runtime governs → Mind thinks → Body acts → Interface displays**
+## Commitment
+
+This repository provides visibility and control for ALIVE.
+
+It is responsible for:
+- displaying system state
+- presenting decisions and outputs
+- accepting user input
+- exposing audit and inspection views
+
+It does not:
+- perform cognition
+- execute actions
+- enforce rules
+- bypass runtime
+
+All interaction flows through runtime.
+
+## Architecture Spine
+
+Constitution defines → Runtime governs → Mind thinks → Body acts → Interface displays
 
 ## Purpose
 User interface for interaction, visibility, and control.

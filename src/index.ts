@@ -1,5 +1,7 @@
-/**
- * ALIVE Interface — Entry Point
- */
-export { ApiClient } from "./adapters/api-client/api-client";
-export { WebSocketClient } from "./adapters/websocket/websocket-client";
+import { ingestInput } from '../../alive-body/src/sensors/ingestion';
+import { routeSignal } from '../../alive-runtime/src/router/signal-router';
+
+const signal = ingestInput('hello');
+const result = routeSignal(signal);
+
+console.log('ALIVE result:', result);

@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(grep -n \"flag_id\\\\|flag_type\\\\|priority\\\\|confidence\\\\|reason\\\\|support_ref\\\\|expires_at\" /c/Users/mikeh/dev/ALIVE/alive-repos/alive-constitution/contracts/*.ts)",
+      "Skill(update-config)",
+      "Skill(update-config:*)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\mikeh\\.claude"
+    ]
+  }
+}

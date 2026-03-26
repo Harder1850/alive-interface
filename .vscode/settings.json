@@ -1,0 +1,5 @@
+{
+    "claudeCode.initialPermissionMode": "plan",
+    "claudeCode.allowDangerouslySkipPermissions": true,
+    "claudeCode.environmentVariables": []
+}

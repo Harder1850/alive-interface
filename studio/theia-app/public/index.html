@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ALIVE Studio</title>
+  <link rel="stylesheet" href="studio.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ACTIVITY BAR  (far-left icon strip, VS Code style)
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="activity-bar">
+    <div class="ab-logo" title="ALIVE Studio">
+      <span class="ab-logo-text">A</span>
+    </div>
+    <div class="ab-spacer"></div>
+    <button class="ab-icon" id="btn-open-vscode" title="Open ALIVE repos in VS Code">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+        <polyline points="15 3 21 3 21 9"/>
+        <line x1="10" y1="14" x2="21" y2="3"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SIDEBAR  (workspace nav + plugin shortcuts)
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="sidebar">
+    <div class="sb-section-title">ALIVE Studio</div>
+
+    <div class="sb-nav">
+      <div class="sb-nav-item" data-nav="launcher">
+        <span class="sb-nav-icon">🚀</span> Launcher
+      </div>
+      <div class="sb-nav-item" data-nav="trace">
+        <span class="sb-nav-icon">📋</span> Signal Trace
+      </div>
+      <div class="sb-nav-item" data-nav="signals">
+        <span class="sb-nav-icon">⚡</span> Signal Injection
+      </div>
+      <div class="sb-nav-item" data-nav="state">
+        <span class="sb-nav-icon">🔌</span> Runtime State
+      </div>
+      <div class="sb-nav-item" data-nav="logs">
+        <span class="sb-nav-icon">📄</span> Logs
+      </div>
+    </div>
+
+    <div class="sb-divider"></div>
+    <div class="sb-section-title">Workspace</div>
+
+    <div class="sb-workspace">
+      <div class="sb-ws-item">alive-constitution/</div>
+      <div class="sb-ws-item">alive-runtime/</div>
+      <div class="sb-ws-item">alive-mind/</div>
+      <div class="sb-ws-item">alive-body/</div>
+      <div class="sb-ws-item sb-ws-active">alive-interface/ ←</div>
+    </div>
+
+    <div class="sb-divider"></div>
+    <div class="sb-section-title">Quick Inject</div>
+    <div class="sb-quick">
+      <button class="sb-quick-btn" data-quick="hello">hello</button>
+      <button class="sb-quick-btn" data-quick="cpu spike detected">cpu spike</button>
+      <button class="sb-quick-btn" data-quick="disk space low warning">disk low</button>
+      <button class="sb-quick-btn" data-quick="deny this signal now">deny</button>
+    </div>
+
+    <div class="sb-footer">
+      <kbd>Ctrl+P</kbd> command palette
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       MAIN AREA  (tab bar + panels)
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="main-area">
+
+    <!-- Tab bar -->
+    <div id="tab-bar">
+      <div class="tab active" data-tab="launcher">🚀 Launcher</div>
+      <div class="tab"        data-tab="trace">📋 Trace</div>
+      <div class="tab"        data-tab="signals">⚡ Signals</div>
+      <div class="tab"        data-tab="state">🔌 State</div>
+    </div>
+
+    <!-- Plugin panels -->
+    <div id="panels">
+      <div id="panel-launcher" class="panel"></div>
+      <div id="panel-trace"    class="panel" style="display:none"></div>
+      <div id="panel-signals"  class="panel" style="display:none"></div>
+      <div id="panel-state"    class="panel" style="display:none"></div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       BOTTOM PANEL  (logs)
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="bottom-panel">
+    <div id="bottom-tab-bar">
+      <div class="bottom-tab active" data-btab="logs">📄 Logs &amp; Output</div>
+    </div>
+    <div id="panel-logs" class="panel"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       STATUS BAR  (bottom strip)
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="status-bar">
+    <span id="status-bar-text" class="sb-text">◌ Connecting…</span>
+    <span class="sb-right">ALIVE Studio · dev</span>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       COMMAND PALETTE  (overlay, Ctrl+P)
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="cmd-overlay" style="display:none">
+    <div id="cmd-box">
+      <input id="cmd-input" type="text" placeholder="ALIVE: type a command…" autocomplete="off" spellcheck="false" />
+      <div id="cmd-results"></div>
+    </div>
+  </div>
+
+  <!-- Bundle (TypeScript compiled + linked by esbuild) -->
+  <script src="bundle.js"></script>
+
+  <!-- Sidebar quick-inject wiring (plain JS, no bundle needed) -->
+  <script>
+    document.querySelectorAll('[data-quick]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        // Dispatch a CustomEvent that app.ts picks up via runtimeClient
+        // Actually easier: just simulate scenario button press in signals panel
+        // We defer until the bundle has loaded the runtime client
+        var payload = btn.getAttribute('data-quick');
+        if (!payload) return;
+        // The bundle exposes nothing global, so we use a data attribute
+        // and let app.ts wire this after mount.
+        // Instead: directly post to server via fetch (bypasses client — DON'T)
+        // Correct: dispatch a custom DOM event that app.ts can intercept.
+        window.dispatchEvent(new CustomEvent('studio:inject', { detail: { payload: payload } }));
+      });
+    });
+  </script>
+
+</body>
+</html>

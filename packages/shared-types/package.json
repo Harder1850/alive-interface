@@ -1,0 +1,11 @@
+{
+  "name": "@alive-studio/shared-types",
+  "version": "0.1.0",
+  "description": "Shared type definitions for ALIVE Studio and runtime integration",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "license": "Apache-2.0"
+}

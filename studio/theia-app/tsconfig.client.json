@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target":           "ES2020",
+    "module":           "ES2020",
+    "lib":              ["ES2020", "DOM"],
+    "strict":           true,
+    "moduleResolution": "node",
+    "esModuleInterop":  true,
+    "baseUrl":          ".",
+    "paths": {
+      "@alive-studio/shared-types":   ["../packages/shared-types/src"],
+      "@alive-studio/runtime-client": ["../packages/runtime-client/src"],
+      "@alive-studio/launcher":       ["../plugins/alive-launcher/src"],
+      "@alive-studio/trace":          ["../plugins/alive-trace/src"],
+      "@alive-studio/signals":        ["../plugins/alive-signals/src"],
+      "@alive-studio/state":          ["../plugins/alive-state/src"],
+      "@alive-studio/logs":           ["../plugins/alive-logs/src"]
+    }
+  },
+  "include": ["src/client/**/*.ts"]
+}

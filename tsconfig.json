@@ -5,7 +5,17 @@
     "outDir": "dist",
     "rootDir": ".",
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@alive-studio/shared-types": ["packages/shared-types/src"],
+      "@alive-studio/runtime-client": ["packages/runtime-client/src"],
+      "@alive-studio/launcher": ["plugins/alive-launcher/src"],
+      "@alive-studio/trace": ["plugins/alive-trace/src"],
+      "@alive-studio/signals": ["plugins/alive-signals/src"],
+      "@alive-studio/state": ["plugins/alive-state/src"],
+      "@alive-studio/logs": ["plugins/alive-logs/src"]
+    }
   },
   "include": ["**/*.ts"],
   "exclude": ["dist", "node_modules"]

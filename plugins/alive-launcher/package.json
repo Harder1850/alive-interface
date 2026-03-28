@@ -1,0 +1,15 @@
+{
+  "name": "@alive-studio/launcher",
+  "version": "0.1.0",
+  "description": "ALIVE Studio launcher plugin - start/stop, profile selector, status display",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@alive-studio/shared-types": "file:../../packages/shared-types",
+    "@alive-studio/runtime-client": "file:../../packages/runtime-client"
+  }
+}

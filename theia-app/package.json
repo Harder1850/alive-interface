@@ -1,0 +1,25 @@
+{
+  "name": "alive-studio",
+  "version": "0.1.0",
+  "description": "ALIVE Studio - Theia-based development interface with runtime pipeline integration",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "vite build",
+    "start": "vite",
+    "preview": "vite preview"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@alive-studio/launcher": "file:../plugins/alive-launcher",
+    "@alive-studio/logs": "file:../plugins/alive-logs",
+    "@alive-studio/runtime-client": "file:../packages/runtime-client",
+    "@alive-studio/shared-types": "file:../packages/shared-types",
+    "@alive-studio/signals": "file:../plugins/alive-signals",
+    "@alive-studio/state": "file:../plugins/alive-state",
+    "@alive-studio/trace": "file:../plugins/alive-trace"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vite": "^8.0.3"
+  }
+}

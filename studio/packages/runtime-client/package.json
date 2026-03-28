@@ -1,0 +1,7 @@
+{
+  "name": "@alive-studio/runtime-client",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Browser-side WebSocket client — the ONLY communication path from studio to runtime",
+  "main": "src/index.ts"
+}

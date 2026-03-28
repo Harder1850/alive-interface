@@ -1,0 +1,26 @@
+{
+  "name": "alive-studio-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ALIVE Studio — Theia-app shell: server + bundled browser cockpit",
+  "scripts": {
+    "build:server": "tsc",
+    "build:client": "node esbuild.config.mjs",
+    "build":        "npm run build:server && npm run build:client",
+    "start":        "node dist/server/server.js",
+    "dev":          "concurrently --names SERVER,CLIENT,WATCH \"npm run start\" \"node --watch dist/server/server.js\" \"npm run build:client -- --watch\"",
+    "dev:simple":   "npm run build && node dist/server/server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "ws":      "^8.17.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node":    "^20.14.0",
+    "@types/ws":      "^8.5.10",
+    "concurrently":   "^8.2.2",
+    "esbuild":        "^0.21.5",
+    "typescript":     "^5.4.5"
+  }
+}

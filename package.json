@@ -3,6 +3,16 @@
   "version": "0.1.0",
   "description": "User-facing interface for ALIVE. Provides visibility, controls, audit views, and state inspection.",
   "main": "dist/index.js",
+  "workspaces": [
+    "packages/shared-types",
+    "packages/runtime-client",
+    "plugins/alive-launcher",
+    "plugins/alive-trace",
+    "plugins/alive-signals",
+    "plugins/alive-state",
+    "plugins/alive-logs",
+    "theia-app"
+  ],
   "scripts": {
     "build": "tsc"
   },

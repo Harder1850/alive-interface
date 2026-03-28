@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ES2020",
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "esModuleInterop": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@alive-studio/shared-types": ["../packages/shared-types/dist"],
+      "@alive-studio/runtime-client": ["../packages/runtime-client/dist"],
+      "@alive-studio/launcher": ["../plugins/alive-launcher/dist"],
+      "@alive-studio/trace": ["../plugins/alive-trace/dist"],
+      "@alive-studio/signals": ["../plugins/alive-signals/dist"],
+      "@alive-studio/state": ["../plugins/alive-state/dist"],
+      "@alive-studio/logs": ["../plugins/alive-logs/dist"]
+    }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["dist", "node_modules"]
+}

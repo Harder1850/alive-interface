@@ -1,0 +1,12 @@
+{
+  "name": "alive-studio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ALIVE Studio — development cockpit for the ALIVE organism",
+  "scripts": {
+    "install": "cd theia-app && npm install",
+    "build":   "cd theia-app && npm run build",
+    "start":   "cd theia-app && npm start",
+    "dev":     "cd theia-app && npm run dev:simple"
+  }
+}

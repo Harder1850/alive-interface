@@ -4,7 +4,16 @@
       "Bash(npm install:*)",
       "Bash(grep -n \"flag_id\\\\|flag_type\\\\|priority\\\\|confidence\\\\|reason\\\\|support_ref\\\\|expires_at\" /c/Users/mikeh/dev/ALIVE/alive-repos/alive-constitution/contracts/*.ts)",
       "Skill(update-config)",
-      "Skill(update-config:*)"
+      "Skill(update-config:*)",
+      "Bash(cmd.exe /c \"taskkill /PID 15992 /F 2>&1\")",
+      "Bash(powershell.exe -Command \"Stop-Process -Id 15992 -Force -ErrorAction SilentlyContinue; Write-Output ''done''\")",
+      "Bash(python3 -c \"import sys,json; entries=json.load\\(sys.stdin\\); [print\\(e[''''ts''''][:19], e.get\\(''''mode'''',''''?''''\\), e[''''summary''''][:80]\\) for e in entries[-10:]]\")",
+      "Bash(netstat -ano)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(f''''{len\\(d\\)} stories''''\\)\")",
+      "Bash(python3 -c \":*)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(''''battery:'''', d.get\\(''''battery'''',{}\\).get\\(''''percent'''',''''?''''\\), ''''% | survival:'''', d.get\\(''''survivalMode'''',''''?''''\\), ''''| weather:'''', d.get\\(''''weather'''',{}\\).get\\(''''description'''',''''?''''\\)\\)\")",
+      "Bash(node -e \"const d=require\\(''C:/Users/mikeh/dev/ALIVE/alive-repos/alive-mind/memory/stories.json''\\); console.log\\(d.length,''stories; first:'',d[0].context.slice\\(0,60\\),''last:'',d[d.length-1].context.slice\\(0,60\\)\\)\")",
+      "Bash(node -e \":*)"
     ],
     "additionalDirectories": [
       "C:\\Users\\mikeh\\.claude"

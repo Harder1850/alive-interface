@@ -6,6 +6,7 @@ import { getNotes, saveNotes } from "./notes";
 import { readLoopStatus, readMemorySnapshot, readRuntimeStatus } from "./phase1";
 import { getPriorities, getPrioritiesSnapshot } from "./priorities";
 import { getReposStatus, type RepoId } from "./repos";
+import { getStartupReadiness } from "./startup";
 import { getSystemStatus } from "./system";
 import { getTargetsState, setFavorite } from "./targets";
 
@@ -26,6 +27,16 @@ app.get("/api/repos", async (_req, res) => {
   } catch (error) {
     res.status(500).json({ error: error instanceof Error ? error.message : "Failed to load repos." });
   }
+});
+
+app.get("/api/health", (_req, res) => {
+  const readiness = getStartupReadiness();
+  const ok = readiness.studioReady && readiness.runtimeReady;
+  res.status(ok ? 200 : 503).json({ ok, readiness });
+});
+
+app.get("/api/startup-readiness", (_req, res) => {
+  res.json(getStartupReadiness());
 });
 
 app.post("/api/open", async (req, res) => {

@@ -126,6 +126,21 @@ export interface StoryModeSummary {
   generatedAt: number;
 }
 
+export interface StartupReadiness {
+  studioReady: boolean;
+  runtimeReady: boolean;
+  demoPathReady: boolean;
+  details: {
+    runtimeRepoPath: string;
+    runtimePackageJsonPath: string;
+    hasRuntimePackageJson: boolean;
+    hasDemoScript: boolean;
+    phase1DirPath: string;
+    phase1DirReady: boolean;
+  };
+  timestamp: string;
+}
+
 export interface Phase1RuntimeStatus {
   currentMode: string;
   baselineVigilanceActive: boolean;

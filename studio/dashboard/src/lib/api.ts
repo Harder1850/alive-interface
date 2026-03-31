@@ -7,6 +7,7 @@ import type {
   PrioritiesSnapshot,
   RepoId,
   RepoStatus,
+  StartupReadiness,
   SystemStatus,
   TargetsState,
 } from "../types";
@@ -114,4 +115,9 @@ export async function fetchPhase1Memory(): Promise<Phase1MemorySnapshot> {
 export async function fetchPhase1Runtime(): Promise<Phase1RuntimeStatus> {
   const res = await fetch(apiUrl("/api/phase1/runtime"));
   return readJson<Phase1RuntimeStatus>(res);
+}
+
+export async function fetchStartupReadiness(): Promise<StartupReadiness> {
+  const res = await fetch(apiUrl("/api/startup-readiness"));
+  return readJson<StartupReadiness>(res);
 }

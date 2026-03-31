@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { MemorySnapshotPanel } from "./components/MemorySnapshotPanel";
 import { StoryModePanel } from "./components/StoryModePanel";
@@ -14,6 +14,7 @@ import { SystemLoopPanel } from "./components/SystemLoopPanel";
 import { StatusBar } from "./components/StatusBar";
 import { TopBar } from "./components/TopBar";
 import {
+  fetchStartupReadiness,
   fetchNotes,
   fetchPhase1Loop,
   fetchPhase1Memory,
@@ -37,6 +38,7 @@ import type {
   RepoActionState,
   RepoId,
   RepoStatus,
+  StartupReadiness,
   SystemStatus,
   TargetsState,
 } from "./types";
@@ -62,6 +64,7 @@ export function App() {
   const [loopStatus, setLoopStatus] = useState<Phase1LoopStatus | null>(null);
   const [memorySnapshot, setMemorySnapshot] = useState<Phase1MemorySnapshot | null>(null);
   const [runtimeStatus, setRuntimeStatus] = useState<Phase1RuntimeStatus | null>(null);
+  const [startupReadiness, setStartupReadiness] = useState<StartupReadiness | null>(null);
   const [demoRunStatus, setDemoRunStatus] = useState<"idle" | "running" | "completed" | "failed">("idle");
   const [demoRunMessage, setDemoRunMessage] = useState<string>("Ready.");
   const [repoAction, setRepoAction] = useState<Record<RepoId, RepoActionState>>({
@@ -77,7 +80,7 @@ export function App() {
   }, []);
 
   const refreshAll = useCallback(async () => {
-    const [reposRes, systemRes, notesRes, targetsRes, prioritiesRes, loopRes, memoryRes, runtimeRes] = await Promise.all([
+    const [reposRes, systemRes, notesRes, targetsRes, prioritiesRes, loopRes, memoryRes, runtimeRes, readinessRes] = await Promise.all([
       fetchRepos(),
       fetchSystem(),
       fetchNotes(),
@@ -86,6 +89,7 @@ export function App() {
       fetchPhase1Loop(),
       fetchPhase1Memory(),
       fetchPhase1Runtime(),
+      fetchStartupReadiness(),
     ]);
     setRepos(reposRes);
     setSystem(systemRes);
@@ -95,6 +99,7 @@ export function App() {
     setLoopStatus(loopRes);
     setMemorySnapshot(memoryRes);
     setRuntimeStatus(runtimeRes);
+    setStartupReadiness(readinessRes);
     const now = new Date().toISOString();
     setRepoAction((prev) => {
       const next = { ...prev };
@@ -111,12 +116,13 @@ export function App() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      void Promise.all([fetchSystem(), fetchPhase1Loop(), fetchPhase1Memory(), fetchPhase1Runtime()])
-        .then(([systemRes, loopRes, memoryRes, runtimeRes]) => {
+      void Promise.all([fetchSystem(), fetchPhase1Loop(), fetchPhase1Memory(), fetchPhase1Runtime(), fetchStartupReadiness()])
+        .then(([systemRes, loopRes, memoryRes, runtimeRes, readinessRes]) => {
           setSystem(systemRes);
           setLoopStatus(loopRes);
           setMemorySnapshot(memoryRes);
           setRuntimeStatus(runtimeRes);
+          setStartupReadiness(readinessRes);
         })
         .catch(() => undefined);
     }, 5000);
@@ -236,17 +242,6 @@ export function App() {
     setTargets(state);
   }, []);
 
-  const leftColumn = useMemo(
-    () => (
-      <aside style={{ display: "grid", gap: 10, alignContent: "start", overflow: "auto", paddingRight: 4 }}>
-        {repos.map((repo) => (
-          <RepoCard key={repo.id} repo={repo} onOpen={onOpen} onRun={onRun} actionState={repoAction[repo.id]} />
-        ))}
-      </aside>
-    ),
-    [repos, onOpen, onRun, repoAction]
-  );
-
   const latestNotice = loopStatus?.lastSignal
     ? `${loopStatus.lastSignal.source ?? "--"}/${loopStatus.lastSignal.kind ?? "--"}`
     : "--";
@@ -260,6 +255,11 @@ export function App() {
   };
 
   const runLiveDemo = useCallback(async () => {
+    if (!startupReadiness?.demoPathReady) {
+      setDemoRunStatus("failed");
+      setDemoRunMessage("Demo path is not ready. Wait for readiness checks to pass.");
+      return;
+    }
     setDemoRunStatus("running");
     setDemoRunMessage("Running proving scenario...");
     try {
@@ -272,7 +272,7 @@ export function App() {
         setDemoRunMessage("Proving scenario completed and artifacts refreshed.");
       } else {
         setDemoRunStatus("failed");
-        setDemoRunMessage("Scenario command returned an error.");
+        setDemoRunMessage(result.output || "Scenario command returned an error.");
       }
     } catch (error) {
       setDemoRunStatus("failed");
@@ -280,7 +280,7 @@ export function App() {
       pushOutput(mkEntry("run live demo", false, error instanceof Error ? error.message : "Run failed"));
       focusTimelineArea();
     }
-  }, [pushOutput, refreshAll]);
+  }, [pushOutput, refreshAll, startupReadiness]);
 
   return (
     <div
@@ -298,20 +298,17 @@ export function App() {
           void refreshAll();
           pushOutput(mkEntry("refresh", true, "Refreshed repos, system, and notes."));
         }}
-        onCommand={onCommand}
       />
 
       <main
         style={{
           minHeight: 0,
           display: "grid",
-          gridTemplateColumns: "340px 1fr 360px",
+          gridTemplateColumns: "1fr 380px",
           gap: 12,
           padding: 12,
         }}
       >
-        {leftColumn}
-
         <section style={{ minHeight: 0, display: "grid", gridTemplateRows: "1.3fr 1fr", gap: 12 }}>
           <OutputPanel entries={output} />
           <section ref={timelineAreaRef} style={{ minHeight: 0, overflow: "auto", display: "grid", gap: 12, paddingRight: 4 }}>
@@ -323,12 +320,10 @@ export function App() {
         </section>
 
         <section style={{ display: "grid", gap: 12, alignContent: "start", minHeight: 0, overflow: "auto" }}>
-          <NotesPanel initialValue={notes} onSave={onSaveNotes} />
-          <RecentTargetsPanel state={targets} onOpen={onOpen} onToggleFavorite={onToggleFavorite} />
-          <PrioritiesPanel snapshot={priorities} />
           <QuickLaunchPanel
             demoRunStatus={demoRunStatus}
             demoRunMessage={demoRunMessage}
+            startupReadiness={startupReadiness}
             latestNotice={latestNotice}
             latestReason={latestReason}
             latestActionOutcome={latestActionOutcome}
@@ -367,6 +362,20 @@ export function App() {
             onRunBodyTests={() => onRun("body", "tests")}
             onOpenNotes={() => onCommand("open notes")}
           />
+
+          <details>
+            <summary style={{ cursor: "pointer", color: "#9cb4cd", fontSize: 12 }}>Secondary panels</summary>
+            <section style={{ display: "grid", gap: 12, marginTop: 8 }}>
+              <NotesPanel initialValue={notes} onSave={onSaveNotes} />
+              <RecentTargetsPanel state={targets} onOpen={onOpen} onToggleFavorite={onToggleFavorite} />
+              <PrioritiesPanel snapshot={priorities} />
+              <aside style={{ display: "grid", gap: 10, alignContent: "start", overflow: "auto", paddingRight: 4 }}>
+                {repos.map((repo) => (
+                  <RepoCard key={repo.id} repo={repo} onOpen={onOpen} onRun={onRun} actionState={repoAction[repo.id]} />
+                ))}
+              </aside>
+            </section>
+          </details>
         </section>
       </main>
 

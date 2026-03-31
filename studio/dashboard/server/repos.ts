@@ -37,6 +37,7 @@ export const REPO_DEFINITIONS: RepoDefinition[] = [
 
 function resolveBaseReposDir(): string {
   const candidates = [
+    path.resolve(dashboardDir, "../../../.."),
     path.resolve(dashboardDir, "../../.."),
     path.resolve(dashboardDir, "../.."),
   ];

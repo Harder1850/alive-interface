@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { MemorySnapshotPanel } from "./components/MemorySnapshotPanel";
 
@@ -51,6 +51,7 @@ function mkEntry(title: string, ok: boolean, body: string): OutputEntry {
 }
 
 export function App() {
+  const timelineAreaRef = useRef<HTMLElement | null>(null);
   const [repos, setRepos] = useState<RepoStatus[]>([]);
   const [system, setSystem] = useState<SystemStatus | null>(null);
   const [notes, setNotes] = useState<string>("");
@@ -60,6 +61,8 @@ export function App() {
   const [loopStatus, setLoopStatus] = useState<Phase1LoopStatus | null>(null);
   const [memorySnapshot, setMemorySnapshot] = useState<Phase1MemorySnapshot | null>(null);
   const [runtimeStatus, setRuntimeStatus] = useState<Phase1RuntimeStatus | null>(null);
+  const [demoRunStatus, setDemoRunStatus] = useState<"idle" | "running" | "completed" | "failed">("idle");
+  const [demoRunMessage, setDemoRunMessage] = useState<string>("Ready.");
   const [repoAction, setRepoAction] = useState<Record<RepoId, RepoActionState>>({
     constitution: {},
     runtime: {},
@@ -243,6 +246,41 @@ export function App() {
     [repos, onOpen, onRun, repoAction]
   );
 
+  const latestNotice = loopStatus?.lastSignal
+    ? `${loopStatus.lastSignal.source ?? "--"}/${loopStatus.lastSignal.kind ?? "--"}`
+    : "--";
+  const latestReason = loopStatus?.lastReasoningSummary ?? loopStatus?.lastSummary ?? loopStatus?.note ?? "--";
+  const latestActionOutcome =
+    loopStatus?.lastOutcome?.note ??
+    `${loopStatus?.lastCandidateAction ?? runtimeStatus?.lastCandidateAction ?? "--"} / ${runtimeStatus?.lastOutcomeSummary ?? "--"}`;
+
+  const focusTimelineArea = () => {
+    timelineAreaRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const runLiveDemo = useCallback(async () => {
+    setDemoRunStatus("running");
+    setDemoRunMessage("Running proving scenario...");
+    try {
+      const result = await runRepo("runtime", "phase1:prove");
+      pushOutput(mkEntry("run live demo", result.ok, result.output));
+      await refreshAll();
+      focusTimelineArea();
+      if (result.ok) {
+        setDemoRunStatus("completed");
+        setDemoRunMessage("Proving scenario completed and artifacts refreshed.");
+      } else {
+        setDemoRunStatus("failed");
+        setDemoRunMessage("Scenario command returned an error.");
+      }
+    } catch (error) {
+      setDemoRunStatus("failed");
+      setDemoRunMessage(error instanceof Error ? error.message : "Run failed.");
+      pushOutput(mkEntry("run live demo", false, error instanceof Error ? error.message : "Run failed"));
+      focusTimelineArea();
+    }
+  }, [pushOutput, refreshAll]);
+
   return (
     <div
       style={{
@@ -275,7 +313,7 @@ export function App() {
 
         <section style={{ minHeight: 0, display: "grid", gridTemplateRows: "1.3fr 1fr", gap: 12 }}>
           <OutputPanel entries={output} />
-          <section style={{ minHeight: 0, overflow: "auto", display: "grid", gap: 12, paddingRight: 4 }}>
+          <section ref={timelineAreaRef} style={{ minHeight: 0, overflow: "auto", display: "grid", gap: 12, paddingRight: 4 }}>
             <SystemLoopPanel loop={loopStatus} />
             <RuntimeStatusPanel status={runtimeStatus} />
             <MemorySnapshotPanel snapshot={memorySnapshot} />
@@ -287,19 +325,25 @@ export function App() {
           <RecentTargetsPanel state={targets} onOpen={onOpen} onToggleFavorite={onToggleFavorite} />
           <PrioritiesPanel snapshot={priorities} />
           <QuickLaunchPanel
-            onTriggerScenario={async () => {
-              const result = await runRepo("runtime", "phase1:prove");
-              pushOutput(mkEntry("trigger proving scenario", result.ok, result.output));
-              await refreshAll();
-            }}
-            onInspectArtifacts={async () => {
+            demoRunStatus={demoRunStatus}
+            demoRunMessage={demoRunMessage}
+            latestNotice={latestNotice}
+            latestReason={latestReason}
+            latestActionOutcome={latestActionOutcome}
+            onRunLiveDemo={runLiveDemo}
+            onInspectLatestCycle={async () => {
               const result = await runRepo("interface", "demo:inspect");
               pushOutput(mkEntry("inspect artifacts", result.ok, result.output));
+              await refreshAll();
+              focusTimelineArea();
             }}
-            onResetDemoState={async () => {
+            onResetDemo={async () => {
               const result = await runRepo("interface", "demo:reset");
               pushOutput(mkEntry("reset demo state", result.ok, result.output));
               await refreshAll();
+              setDemoRunStatus("idle");
+              setDemoRunMessage("Demo state reset.");
+              focusTimelineArea();
             }}
             onRefreshRepos={async () => {
               await refreshReposStatus();

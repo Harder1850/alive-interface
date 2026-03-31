@@ -14,7 +14,12 @@
     "theia-app"
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "demo:start": "npm --prefix ../alive-runtime run start",
+    "demo:studio": "npm --prefix studio/dashboard run dev",
+    "demo:trigger": "npm --prefix ../alive-runtime run phase1:prove",
+    "demo:inspect": "node scripts/demo-inspect.mjs",
+    "demo:reset": "node scripts/demo-reset.mjs"
   },
   "license": "MIT",
   "devDependencies": {

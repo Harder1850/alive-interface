@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { MemorySnapshotPanel } from "./components/MemorySnapshotPanel";
+import { StoryModePanel } from "./components/StoryModePanel";
 
 import { NotesPanel } from "./components/NotesPanel";
 import { OutputPanel } from "./components/OutputPanel";
@@ -314,6 +315,7 @@ export function App() {
         <section style={{ minHeight: 0, display: "grid", gridTemplateRows: "1.3fr 1fr", gap: 12 }}>
           <OutputPanel entries={output} />
           <section ref={timelineAreaRef} style={{ minHeight: 0, overflow: "auto", display: "grid", gap: 12, paddingRight: 4 }}>
+            <StoryModePanel story={runtimeStatus?.storyMode} />
             <SystemLoopPanel loop={loopStatus} />
             <RuntimeStatusPanel status={runtimeStatus} />
             <MemorySnapshotPanel snapshot={memorySnapshot} />

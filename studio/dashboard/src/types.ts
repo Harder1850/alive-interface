@@ -117,6 +117,15 @@ export interface Phase1MemorySnapshot {
   associations?: unknown[];
 }
 
+export interface StoryModeSummary {
+  noticed: string;
+  lookedLike: string;
+  decided: string;
+  result: string;
+  safetyNote: string;
+  generatedAt: number;
+}
+
 export interface Phase1RuntimeStatus {
   currentMode: string;
   baselineVigilanceActive: boolean;
@@ -137,4 +146,5 @@ export interface Phase1RuntimeStatus {
   recentErrors: string[];
   source: "runtime-artifact" | "fallback";
   refreshTimestamp: string;
+  storyMode: StoryModeSummary | null;
 }

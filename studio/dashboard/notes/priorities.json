@@ -1,0 +1,22 @@
+[
+  {
+    "id": "p1",
+    "text": "Finalize memory-module additive wiring plan"
+  },
+  {
+    "id": "p2",
+    "text": "Run runtime test matrix from Studio command bar"
+  },
+  {
+    "id": "p3",
+    "text": "Review constitution docs for routing constraints"
+  },
+  {
+    "id": "p4",
+    "text": "Capture open blanks/decisions in studio notes"
+  },
+  {
+    "id": "p5",
+    "text": "Stabilize dashboard command + status UX"
+  }
+]

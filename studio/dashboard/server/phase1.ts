@@ -59,6 +59,15 @@ export interface MemorySnapshot {
   [key: string]: unknown;
 }
 
+export interface StoryModeSummary {
+  noticed: string;
+  lookedLike: string;
+  decided: string;
+  result: string;
+  safetyNote: string;
+  generatedAt: number;
+}
+
 export interface RuntimeStatusSnapshot {
   currentMode: string;
   baselineVigilanceActive: boolean;
@@ -79,6 +88,7 @@ export interface RuntimeStatusSnapshot {
   recentErrors: string[];
   source: "runtime-artifact" | "fallback";
   refreshTimestamp: string;
+  storyMode: StoryModeSummary | null;
 }
 
 function asObj(value: unknown): Record<string, unknown> {
@@ -201,5 +211,18 @@ export async function readRuntimeStatus(): Promise<RuntimeStatusSnapshot> {
     recentErrors: Array.isArray(loop.errors) ? loop.errors.map(String).slice(0, 5) : [],
     source: hasRuntimeArtifact ? "runtime-artifact" : "fallback",
     refreshTimestamp: new Date().toISOString(),
+    storyMode: isStoryMode(loop.storyMode) ? loop.storyMode : null,
   };
+}
+
+function isStoryMode(value: unknown): value is StoryModeSummary {
+  if (typeof value !== "object" || value === null) return false;
+  const v = value as Record<string, unknown>;
+  return (
+    typeof v.noticed === "string" &&
+    typeof v.lookedLike === "string" &&
+    typeof v.decided === "string" &&
+    typeof v.result === "string" &&
+    typeof v.safetyNote === "string"
+  );
 }

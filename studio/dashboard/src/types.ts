@@ -130,6 +130,7 @@ export interface StartupReadiness {
   studioReady: boolean;
   runtimeReady: boolean;
   demoPathReady: boolean;
+  intentPathReady: boolean;
   details: {
     runtimeRepoPath: string;
     runtimePackageJsonPath: string;
@@ -162,4 +163,16 @@ export interface Phase1RuntimeStatus {
   source: "runtime-artifact" | "fallback";
   refreshTimestamp: string;
   storyMode: StoryModeSummary | null;
+}
+
+export type IntentRunStatus = "auto-approved" | "pending-approval" | "blocked";
+
+export interface IntentRunResult {
+  ok: boolean;
+  status: IntentRunStatus;
+  message: string;
+  output?: string;
+  threadId: string;
+  latestIssue: string;
+  timestamp: string;
 }

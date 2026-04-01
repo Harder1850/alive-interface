@@ -16,6 +16,16 @@ export interface CommandResult {
   command?: string;
 }
 
+export interface IntentRunResult {
+  ok: boolean;
+  status: "auto-approved" | "pending-approval" | "blocked";
+  message: string;
+  output?: string;
+  threadId: string;
+  latestIssue: string;
+  timestamp: string;
+}
+
 const VS_CODE_BIN = "code";
 
 function runExecFile(command: string, args: string[], cwd?: string): Promise<{ stdout: string; stderr: string }> {
@@ -174,5 +184,74 @@ export async function executeCommandBar(rawCommand: string): Promise<CommandResu
   return {
     ok: false,
     output: `Unknown command: ${input}. Try \"help\".`,
+  };
+}
+
+function normalizeIntent(input: string): string {
+  return input.trim().toLowerCase();
+}
+
+export async function runPlainLanguageIntent(rawIntent: string): Promise<IntentRunResult> {
+  const intent = normalizeIntent(rawIntent);
+  const threadId = `thread-${Date.now()}`;
+  const timestamp = new Date().toISOString();
+
+  if (!intent) {
+    return {
+      ok: false,
+      status: "blocked",
+      message: "Intent cannot be empty.",
+      threadId,
+      latestIssue: "empty-intent",
+      timestamp,
+    };
+  }
+
+  if (/(delete|drop\s+table|shutdown|format|wipe|destroy|rm\s)/i.test(intent)) {
+    return {
+      ok: false,
+      status: "blocked",
+      message: "Blocked by policy: destructive intents require explicit offline approval flow.",
+      threadId,
+      latestIssue: "blocked-destructive-intent",
+      timestamp,
+    };
+  }
+
+  if (/(write|modify|change|deploy|install|reconfigure)/i.test(intent)) {
+    return {
+      ok: true,
+      status: "pending-approval",
+      message: "Intent captured and marked pending approval.",
+      threadId,
+      latestIssue: "awaiting-human-approval",
+      timestamp,
+    };
+  }
+
+  const runDemoHint = /(run|start).*(demo|scenario)|demo/.test(intent);
+  if (runDemoHint) {
+    const runRes = await runRepoScript("runtime", "phase1:prove");
+    return {
+      ok: runRes.ok,
+      status: "auto-approved",
+      message: runRes.ok
+        ? "Intent auto-approved and executed via runtime proving path."
+        : "Intent auto-approved but runtime execution failed.",
+      output: runRes.output,
+      threadId,
+      latestIssue: runRes.ok ? "none" : "runtime-execution-failed",
+      timestamp,
+    };
+  }
+
+  return {
+    ok: true,
+    status: "auto-approved",
+    message: "Intent accepted. No direct runtime action required.",
+    output: `Intent recorded: ${rawIntent}`,
+    threadId,
+    latestIssue: "none",
+    timestamp,
   };
 }

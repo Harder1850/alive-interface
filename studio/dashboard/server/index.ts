@@ -1,7 +1,7 @@
 import cors from "cors";
 import express from "express";
 
-import { executeCommandBar, openTarget, runRepoScript } from "./commands";
+import { executeCommandBar, openTarget, runPlainLanguageIntent, runRepoScript } from "./commands";
 import { getNotes, saveNotes } from "./notes";
 import { readLoopStatus, readMemorySnapshot, readRuntimeStatus } from "./phase1";
 import { getPriorities, getPrioritiesSnapshot } from "./priorities";
@@ -112,6 +112,23 @@ app.post("/api/command", async (req, res) => {
     res.json(result);
   } catch (error) {
     res.status(500).json({ ok: false, output: error instanceof Error ? error.message : "Command failed." });
+  }
+});
+
+app.post("/api/intent/run", async (req, res) => {
+  const intent = String(req.body?.intent ?? "");
+  try {
+    const result = await runPlainLanguageIntent(intent);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: "blocked",
+      message: error instanceof Error ? error.message : "Intent run failed.",
+      threadId: `thread-${Date.now()}`,
+      latestIssue: "intent-route-failure",
+      timestamp: new Date().toISOString(),
+    });
   }
 });
 

@@ -15,6 +15,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "check:backbone": "node scripts/backbone-freeze-check.mjs",
     "demo:start": "npm --prefix ../alive-runtime run start",
     "demo:studio": "npm --prefix studio/dashboard run dev",
     "demo:trigger": "npm --prefix ../alive-runtime run phase1:prove",

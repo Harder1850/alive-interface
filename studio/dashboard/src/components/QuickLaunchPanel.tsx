@@ -5,7 +5,19 @@ interface QuickLaunchPanelProps {
     studioReady: boolean;
     runtimeReady: boolean;
     demoPathReady: boolean;
+    intentPathReady: boolean;
   } | null;
+  intentValue: string;
+  intentRunning: boolean;
+  intentStatusLabel?: string;
+  intentMessage?: string;
+  autoApprovedCount: number;
+  pendingApprovalCount: number;
+  blockedCount: number;
+  latestThreadId?: string;
+  latestIssue?: string;
+  onIntentChange: (value: string) => void;
+  onRunIntent: () => Promise<void> | void;
   latestNotice?: string;
   latestReason?: string;
   latestActionOutcome?: string;
@@ -28,6 +40,17 @@ export function QuickLaunchPanel({
   demoRunStatus,
   demoRunMessage,
   startupReadiness,
+  intentValue,
+  intentRunning,
+  intentStatusLabel,
+  intentMessage,
+  autoApprovedCount,
+  pendingApprovalCount,
+  blockedCount,
+  latestThreadId,
+  latestIssue,
+  onIntentChange,
+  onRunIntent,
   latestNotice,
   latestReason,
   latestActionOutcome,
@@ -72,6 +95,46 @@ export function QuickLaunchPanel({
         <span style={{ padding: "3px 8px", borderRadius: 999, background: startupReadiness?.demoPathReady ? "#153a2a" : "#3a1d1d" }}>
           Demo path: {startupReadiness?.demoPathReady ? "ready" : "not ready"}
         </span>
+        <span style={{ padding: "3px 8px", borderRadius: 999, background: startupReadiness?.intentPathReady ? "#153a2a" : "#3a1d1d" }}>
+          Intent path: {startupReadiness?.intentPathReady ? "ready" : "not ready"}
+        </span>
+      </div>
+
+      <div style={{ border: "1px solid #2a3a52", borderRadius: 8, padding: 8, background: "#0a111b", marginBottom: 10 }}>
+        <div style={{ fontSize: 12, color: "#b8cae0", marginBottom: 6 }}>Plain-language intent</div>
+        <div style={{ display: "flex", gap: 8 }}>
+          <input
+            value={intentValue}
+            onChange={(event) => onIntentChange(event.target.value)}
+            placeholder="What do you want to do?"
+            style={{
+              flex: 1,
+              padding: "8px 10px",
+              borderRadius: 8,
+              border: "1px solid #2f3a4a",
+              background: "#0d1420",
+              color: "#f5f7fa",
+            }}
+          />
+          <button onClick={onRunIntent} disabled={intentRunning || !startupReadiness?.intentPathReady}>
+            {intentRunning ? "Running..." : "Run"}
+          </button>
+        </div>
+        <div style={{ marginTop: 6, fontSize: 12, color: "#dbe8f7" }}>
+          status: <strong>{intentStatusLabel ?? "idle"}</strong>
+          {intentMessage ? ` — ${intentMessage}` : ""}
+        </div>
+      </div>
+
+      <div style={{ border: "1px solid #2a3a52", borderRadius: 8, padding: 8, background: "#0a111b", marginBottom: 10 }}>
+        <div style={{ fontSize: 12, color: "#b8cae0", marginBottom: 6 }}>Approvals</div>
+        <div style={{ display: "grid", gap: 4, fontSize: 12, color: "#dbe8f7" }}>
+          <div>Auto-approved actions: <strong>{autoApprovedCount}</strong></div>
+          <div>Pending approval actions: <strong>{pendingApprovalCount}</strong></div>
+          <div>Blocked actions: <strong>{blockedCount}</strong></div>
+          <div>Latest thread: <strong>{latestThreadId ?? "--"}</strong></div>
+          <div>Latest issue: <strong>{latestIssue ?? "none"}</strong></div>
+        </div>
       </div>
 
       <div style={{ display: "grid", gap: 8, marginBottom: 10 }}>

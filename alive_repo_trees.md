@@ -20,6 +20,7 @@ alive-constitution/
 │   ├── action.ts
 │   ├── admissibility.js
 │   ├── admissibility.ts
+│   ├── authorized-action.ts
 │   ├── CONTRACT-TEMPLATE.js
 │   ├── CONTRACT-TEMPLATE.ts
 │   ├── decision.d.ts
@@ -32,6 +33,8 @@ alive-constitution/
 │   ├── flag.js
 │   ├── flag.js.map
 │   ├── flag.ts
+│   ├── intent-thread.ts
+│   ├── intent.ts
 │   ├── memory-entry.js
 │   ├── memory-entry.ts
 │   ├── memory.ts
@@ -106,6 +109,9 @@ alive-constitution/
 ## alive-runtime
 ```text
 alive-runtime/
+├── .phase1/
+│   ├── loop-status.json
+│   └── memory-snapshot.json
 ├── docs/
 │   ├── BOUNDARY_RULES.md
 │   ├── ENFORCEMENT_MODEL.md
@@ -157,8 +163,11 @@ alive-runtime/
 │   │   ├── recovery.ts
 │   │   └── task.ts
 │   ├── phase1/
+│   │   ├── action-whitelist.ts
+│   │   ├── intent-handler.ts
 │   │   ├── phase1-runtime.ts
-│   │   └── proving-scenario.ts
+│   │   ├── proving-scenario.ts
+│   │   └── proving-types.ts
 │   ├── router/
 │   │   ├── action-router.ts
 │   │   ├── factory.ts
@@ -205,6 +214,8 @@ alive-runtime/
 │   ├── main.ts
 │   └── smoke-test.ts
 ├── tests/
+│   ├── intent-path.test.ts
+│   ├── proving-scenario.test.ts
 │   └── red-team.test.ts
 ├── .gitattributes
 ├── .gitignore
@@ -213,12 +224,13 @@ alive-runtime/
 ├── mission.json
 ├── package.json
 ├── README.md
+├── smoke-intent.ts
 └── tsconfig.json
 ```
 
 ### Notes
 
-* **Top-level folders/files:** docs/, enforcement/, src/, tests/, .gitattributes, .gitignore, CONSTITUTION.json, LICENSE, mission.json, package.json, README.md, tsconfig.json
+* **Top-level folders/files:** .phase1/, docs/, enforcement/, src/, tests/, .gitattributes, .gitignore, CONSTITUTION.json, LICENSE, mission.json, package.json, README.md, smoke-intent.ts, tsconfig.json
 * **Files that look important:** LICENSE, README.md, docs/, package.json, src/, tests/, tsconfig.json
 * **Placeholder-like signals:** src/ENFORCEMENT-TEMPLATE.ts
 * **Potentially missing/common items:** contracts, memory
@@ -247,6 +259,8 @@ alive-mind/
 │   │   │   └── synthesizer.ts
 │   │   ├── inference/
 │   │   │   └── inference-engine.ts
+│   │   ├── intent/
+│   │   │   └── intent-interpreter.ts
 │   │   ├── reasoning/
 │   │   │   └── reasoner.ts
 │   │   ├── self-model/
@@ -304,6 +318,7 @@ alive-mind/
 │   │   ├── phase1-memory.ts
 │   │   ├── procedure-library.ts
 │   │   ├── recall-engine.ts
+│   │   ├── reference-adapter.ts
 │   │   ├── reference-memory.ts
 │   │   ├── reference-store.ts
 │   │   ├── relationship-engine.ts
@@ -331,6 +346,7 @@ alive-mind/
 │   ├── index.ts
 │   └── MODULE-TEMPLATE.ts
 ├── tests/
+│   ├── memory-orchestrator-integration.test.ts
 │   ├── memory-refactor.test.ts
 │   └── phase1-memory-mvp.test.ts
 ├── .env
@@ -369,6 +385,7 @@ alive-body/
 │   │   ├── executor.js.map
 │   │   ├── executor.py
 │   │   ├── executor.ts
+│   │   ├── proving-executor.ts
 │   │   └── reversible-actions.ts
 │   ├── adapters/
 │   │   ├── devices/
@@ -465,8 +482,12 @@ alive-interface/
 ├── .vscode/
 │   └── settings.json
 ├── docs/
+│   ├── backbone-freeze-audit.md
 │   ├── BOUNDARY_RULES.md
 │   ├── INTERFACE_ARCHITECTURE.md
+│   ├── proving-scenario-audit.md
+│   ├── proving-scenario-handoff-for-claude.md
+│   ├── proving-scenario-runbook.md
 │   └── UI_BOUNDARY_RULES.md
 ├── packages/
 │   ├── runtime-client/
@@ -539,6 +560,12 @@ alive-interface/
 │       ├── package.json
 │       └── tsconfig.json
 ├── scripts/
+│   ├── windows/
+│   │   ├── Start-AliveStudio.cmd
+│   │   └── Start-AliveStudio.ps1
+│   ├── backbone-freeze-check.mjs
+│   ├── demo-inspect.mjs
+│   ├── demo-reset.mjs
 │   └── generate_repo_trees.py
 ├── src/
 │   ├── adapters/
@@ -573,6 +600,8 @@ alive-interface/
 ├── studio/
 │   ├── dashboard/
 │   │   ├── notes/
+│   │   │   ├── priorities.json
+│   │   │   ├── recent-targets.json
 │   │   │   └── studio-notes.md
 │   │   ├── server/
 │   │   │   ├── commands.ts
@@ -582,18 +611,24 @@ alive-interface/
 │   │   │   ├── phase1.ts
 │   │   │   ├── priorities.ts
 │   │   │   ├── repos.ts
+│   │   │   ├── startup.ts
 │   │   │   ├── system.ts
 │   │   │   └── targets.ts
 │   │   ├── src/
 │   │   │   ├── components/
 │   │   │   │   ├── CommandBar.tsx
+│   │   │   │   ├── MemorySnapshotPanel.tsx
 │   │   │   │   ├── NotesPanel.tsx
 │   │   │   │   ├── OutputPanel.tsx
+│   │   │   │   ├── Phase1PanelCommon.tsx
 │   │   │   │   ├── PrioritiesPanel.tsx
 │   │   │   │   ├── QuickLaunchPanel.tsx
 │   │   │   │   ├── RecentTargetsPanel.tsx
 │   │   │   │   ├── RepoCard.tsx
+│   │   │   │   ├── RuntimeStatusPanel.tsx
 │   │   │   │   ├── StatusBar.tsx
+│   │   │   │   ├── StoryModePanel.tsx
+│   │   │   │   ├── SystemLoopPanel.tsx
 │   │   │   │   └── TopBar.tsx
 │   │   │   ├── lib/
 │   │   │   │   └── api.ts
@@ -602,7 +637,9 @@ alive-interface/
 │   │   │   └── types.ts
 │   │   ├── index.html
 │   │   ├── package.json
+│   │   ├── README.md
 │   │   ├── tsconfig.json
+│   │   ├── vite.config.mjs
 │   │   └── vite.config.ts
 │   ├── docs/
 │   │   ├── ALIVE_STUDIO_ARCHITECTURE.md
@@ -700,6 +737,7 @@ alive-interface/
 * **contracts:**
   * alive-constitution: contracts/, contracts/CONTRACT-TEMPLATE.js, contracts/CONTRACT-TEMPLATE.ts, contracts/action.d.ts, ...
   * alive-runtime: docs/STG_SPEC.md
+  * alive-interface: scripts/demo-inspect.mjs
 * **docs:**
   * alive-constitution: README.md, docs/, docs/AMENDMENT_POLICY.md, docs/BOUNDARY_RULES.md, ...
   * alive-runtime: README.md, docs/, docs/BOUNDARY_RULES.md, docs/ENFORCEMENT_MODEL.md, ...
@@ -713,8 +751,8 @@ alive-interface/
   * alive-body: src/, src/index.ts, src/actuators/, src/actuators/command-dispatch.ts, ...
   * alive-interface: packages/runtime-client/src/, packages/runtime-client/src/index.d.ts, packages/runtime-client/src/index.d.ts.map, packages/runtime-client/src/index.js, ...
 * **tests:**
-  * alive-runtime: tests/, tests/red-team.test.ts
-  * alive-mind: tests/, tests/memory-refactor.test.ts, tests/phase1-memory-mvp.test.ts
+  * alive-runtime: tests/, tests/intent-path.test.ts, tests/proving-scenario.test.ts, tests/red-team.test.ts
+  * alive-mind: tests/, tests/memory-orchestrator-integration.test.ts, tests/memory-refactor.test.ts, tests/phase1-memory-mvp.test.ts
   * alive-body: tests/, tests/hardening.test.ts
   * alive-interface: tests/
 * **adapters:**
@@ -722,9 +760,9 @@ alive-interface/
   * alive-interface: src/adapters/, src/adapters/api-client/, src/adapters/api-client/api-client.ts, src/adapters/websocket/, ...
 * **memory:**
   * alive-constitution: contracts/memory-entry.js, contracts/memory-entry.ts, contracts/memory.ts, invariants/memory-bounds.js, ...
-  * alive-runtime: src/router/memory-router.ts
+  * alive-runtime: .phase1/memory-snapshot.json, src/router/memory-router.ts
   * alive-mind: docs/MEMORY_ARCHITECTURE.md, docs/MEMORY_MODULE_REFACTOR.md, memory/, memory/stories.json, ...
-  * alive-interface: src/audit/memory-audit/, src/audit/memory-audit/index.ts, src/views/memory/, src/views/memory/index.ts
+  * alive-interface: src/audit/memory-audit/, src/audit/memory-audit/index.ts, src/views/memory/, src/views/memory/index.ts, ...
 * **runtime/enforcement/routing-related files:**
   * alive-constitution: docs/AMENDMENT_POLICY.md, policy/, policy/admissibility.js, policy/admissibility.ts, ...
   * alive-runtime: docs/ENFORCEMENT_MODEL.md, docs/RUNTIME_ARCHITECTURE.md, enforcement/, enforcement/direct-dispatch-guard.ts, ...

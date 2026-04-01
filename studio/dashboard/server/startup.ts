@@ -7,6 +7,7 @@ export interface StartupReadiness {
   studioReady: boolean;
   runtimeReady: boolean;
   demoPathReady: boolean;
+  intentPathReady: boolean;
   details: {
     runtimeRepoPath: string;
     runtimePackageJsonPath: string;
@@ -50,6 +51,7 @@ export function getStartupReadiness(): StartupReadiness {
     studioReady: true,
     runtimeReady: hasRuntimePackageJson,
     demoPathReady: hasRuntimePackageJson && hasDemoScript && phase1DirReady,
+    intentPathReady: hasRuntimePackageJson,
     details: {
       runtimeRepoPath,
       runtimePackageJsonPath,

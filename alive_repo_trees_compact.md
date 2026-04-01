@@ -20,6 +20,7 @@ alive-constitution/
 │   ├── action.ts
 │   ├── admissibility.js
 │   ├── admissibility.ts
+│   ├── authorized-action.ts
 │   ├── CONTRACT-TEMPLATE.js
 │   ├── CONTRACT-TEMPLATE.ts
 │   ├── decision.d.ts
@@ -32,6 +33,8 @@ alive-constitution/
 │   ├── flag.js
 │   ├── flag.js.map
 │   ├── flag.ts
+│   ├── intent-thread.ts
+│   ├── intent.ts
 │   ├── memory-entry.js
 │   ├── memory-entry.ts
 │   ├── memory.ts
@@ -99,6 +102,9 @@ alive-constitution/
 ## alive-runtime
 ```text
 alive-runtime/
+├── .phase1/
+│   ├── loop-status.json
+│   └── memory-snapshot.json
 ├── docs/
 │   ├── BOUNDARY_RULES.md
 │   ├── ENFORCEMENT_MODEL.md
@@ -150,8 +156,11 @@ alive-runtime/
 │   │   ├── recovery.ts
 │   │   └── task.ts
 │   ├── phase1/
+│   │   ├── action-whitelist.ts
+│   │   ├── intent-handler.ts
 │   │   ├── phase1-runtime.ts
-│   │   └── proving-scenario.ts
+│   │   ├── proving-scenario.ts
+│   │   └── proving-types.ts
 │   ├── router/
 │   │   ├── action-router.ts
 │   │   ├── factory.ts
@@ -198,6 +207,8 @@ alive-runtime/
 │   ├── main.ts
 │   └── smoke-test.ts
 ├── tests/
+│   ├── intent-path.test.ts
+│   ├── proving-scenario.test.ts
 │   └── red-team.test.ts
 ├── .gitattributes
 ├── .gitignore
@@ -206,6 +217,7 @@ alive-runtime/
 ├── mission.json
 ├── package.json
 ├── README.md
+├── smoke-intent.ts
 └── tsconfig.json
 ```
 
@@ -230,6 +242,7 @@ alive-mind/
 │   ├── cognition/
 │   │   ├── deliberation/
 │   │   ├── inference/
+│   │   ├── intent/
 │   │   ├── reasoning/
 │   │   ├── self-model/
 │   │   ├── are.js
@@ -278,6 +291,7 @@ alive-mind/
 │   │   ├── phase1-memory.ts
 │   │   ├── procedure-library.ts
 │   │   ├── recall-engine.ts
+│   │   ├── reference-adapter.ts
 │   │   ├── reference-memory.ts
 │   │   ├── reference-store.ts
 │   │   ├── relationship-engine.ts
@@ -305,6 +319,7 @@ alive-mind/
 │   ├── index.ts
 │   └── MODULE-TEMPLATE.ts
 ├── tests/
+│   ├── memory-orchestrator-integration.test.ts
 │   ├── memory-refactor.test.ts
 │   └── phase1-memory-mvp.test.ts
 ├── .env
@@ -336,6 +351,7 @@ alive-body/
 │   │   ├── executor.js.map
 │   │   ├── executor.py
 │   │   ├── executor.ts
+│   │   ├── proving-executor.ts
 │   │   └── reversible-actions.ts
 │   ├── adapters/
 │   │   ├── devices/
@@ -425,8 +441,12 @@ alive-interface/
 ├── .vscode/
 │   └── settings.json
 ├── docs/
+│   ├── backbone-freeze-audit.md
 │   ├── BOUNDARY_RULES.md
 │   ├── INTERFACE_ARCHITECTURE.md
+│   ├── proving-scenario-audit.md
+│   ├── proving-scenario-handoff-for-claude.md
+│   ├── proving-scenario-runbook.md
 │   └── UI_BOUNDARY_RULES.md
 ├── packages/
 │   ├── runtime-client/
@@ -459,6 +479,12 @@ alive-interface/
 │       ├── package.json
 │       └── tsconfig.json
 ├── scripts/
+│   ├── windows/
+│   │   ├── Start-AliveStudio.cmd
+│   │   └── Start-AliveStudio.ps1
+│   ├── backbone-freeze-check.mjs
+│   ├── demo-inspect.mjs
+│   ├── demo-reset.mjs
 │   └── generate_repo_trees.py
 ├── src/
 │   ├── adapters/
@@ -485,7 +511,9 @@ alive-interface/
 │   │   ├── src/
 │   │   ├── index.html
 │   │   ├── package.json
+│   │   ├── README.md
 │   │   ├── tsconfig.json
+│   │   ├── vite.config.mjs
 │   │   └── vite.config.ts
 │   ├── docs/
 │   │   ├── ALIVE_STUDIO_ARCHITECTURE.md

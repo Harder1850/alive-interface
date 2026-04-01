@@ -7,6 +7,7 @@ import type {
   PrioritiesSnapshot,
   RepoId,
   RepoStatus,
+  IntentRunResult,
   StartupReadiness,
   SystemStatus,
   TargetsState,
@@ -120,4 +121,13 @@ export async function fetchPhase1Runtime(): Promise<Phase1RuntimeStatus> {
 export async function fetchStartupReadiness(): Promise<StartupReadiness> {
   const res = await fetch(apiUrl("/api/startup-readiness"));
   return readJson<StartupReadiness>(res);
+}
+
+export async function runIntent(intent: string): Promise<IntentRunResult> {
+  const res = await fetch(apiUrl("/api/intent/run"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ intent }),
+  });
+  return readJson<IntentRunResult>(res);
 }

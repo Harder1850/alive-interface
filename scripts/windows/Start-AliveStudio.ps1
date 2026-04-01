@@ -52,6 +52,7 @@ try {
       $readiness.body.studioReady -eq $true -and
       $readiness.body.runtimeReady -eq $true -and
       $readiness.body.demoPathReady -eq $true -and
+      $readiness.body.intentPathReady -eq $true -and
       $studioReachable
     ) {
       $ready = $true
@@ -62,7 +63,7 @@ try {
   }
 
   if (-not $ready) {
-    throw "ALIVE Studio startup failed readiness checks within 120s. Expected Studio, Runtime, and Demo path to be ready."
+    throw "ALIVE Studio startup failed readiness checks within 120s. Expected Studio, Runtime, Demo path, and Intent path to be ready."
   }
 
   Start-Process $studioUrl

@@ -23,6 +23,7 @@ import {
   fetchRepos,
   fetchSystem,
   fetchTargets,
+  runIntent,
   runCommand,
   openRepo,
   runRepo,
@@ -67,6 +68,15 @@ export function App() {
   const [startupReadiness, setStartupReadiness] = useState<StartupReadiness | null>(null);
   const [demoRunStatus, setDemoRunStatus] = useState<"idle" | "running" | "completed" | "failed">("idle");
   const [demoRunMessage, setDemoRunMessage] = useState<string>("Ready.");
+  const [intentValue, setIntentValue] = useState("");
+  const [intentRunning, setIntentRunning] = useState(false);
+  const [intentStatusLabel, setIntentStatusLabel] = useState<string>("idle");
+  const [intentMessage, setIntentMessage] = useState<string>("Ready.");
+  const [autoApprovedCount, setAutoApprovedCount] = useState(0);
+  const [pendingApprovalCount, setPendingApprovalCount] = useState(0);
+  const [blockedCount, setBlockedCount] = useState(0);
+  const [latestThreadId, setLatestThreadId] = useState<string>("--");
+  const [latestIssue, setLatestIssue] = useState<string>("none");
   const [repoAction, setRepoAction] = useState<Record<RepoId, RepoActionState>>({
     constitution: {},
     runtime: {},
@@ -282,6 +292,40 @@ export function App() {
     }
   }, [pushOutput, refreshAll, startupReadiness]);
 
+  const onRunIntent = useCallback(async () => {
+    if (!startupReadiness?.intentPathReady) {
+      setIntentStatusLabel("blocked");
+      setIntentMessage("Intent path is not ready.");
+      return;
+    }
+    setIntentRunning(true);
+    try {
+      const result = await runIntent(intentValue);
+      setIntentStatusLabel(result.status);
+      setIntentMessage(result.message);
+      setLatestThreadId(result.threadId);
+      setLatestIssue(result.latestIssue);
+
+      if (result.status === "auto-approved") setAutoApprovedCount((n) => n + 1);
+      if (result.status === "pending-approval") setPendingApprovalCount((n) => n + 1);
+      if (result.status === "blocked") setBlockedCount((n) => n + 1);
+
+      pushOutput(mkEntry("intent run", result.ok, [result.message, result.output ?? ""].filter(Boolean).join("\n")));
+      if (result.ok && /demo|scenario/i.test(intentValue)) {
+        await refreshAll();
+        focusTimelineArea();
+      }
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : "Intent run failed.";
+      setIntentStatusLabel("blocked");
+      setIntentMessage(msg);
+      setBlockedCount((n) => n + 1);
+      pushOutput(mkEntry("intent run", false, msg));
+    } finally {
+      setIntentRunning(false);
+    }
+  }, [intentValue, pushOutput, refreshAll, startupReadiness]);
+
   return (
     <div
       style={{
@@ -324,6 +368,17 @@ export function App() {
             demoRunStatus={demoRunStatus}
             demoRunMessage={demoRunMessage}
             startupReadiness={startupReadiness}
+            intentValue={intentValue}
+            intentRunning={intentRunning}
+            intentStatusLabel={intentStatusLabel}
+            intentMessage={intentMessage}
+            autoApprovedCount={autoApprovedCount}
+            pendingApprovalCount={pendingApprovalCount}
+            blockedCount={blockedCount}
+            latestThreadId={latestThreadId}
+            latestIssue={latestIssue}
+            onIntentChange={setIntentValue}
+            onRunIntent={onRunIntent}
             latestNotice={latestNotice}
             latestReason={latestReason}
             latestActionOutcome={latestActionOutcome}

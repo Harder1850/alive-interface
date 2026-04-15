@@ -49,3 +49,9 @@ User → UI → Runtime → Mind/Body
 
 ## Drift Warning
 ⚠️ If UI bypasses runtime or makes decisions, system integrity is broken.
+
+## Documentation Standard
+
+This repository follows the ALIVE documentation templates defined in:
+
+alive-constitution/docs/standards/TEMPLATES.md
